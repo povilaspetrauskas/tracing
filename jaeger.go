@@ -13,7 +13,7 @@ import (
 func InitJaeger(serviceName string) (opentracing.Tracer, io.Closer) {
 	jaegerHost := os.Getenv("JAEGER_AGENT_HOST")
 	if jaegerHost == "" {
-		jaegerHost = "localhost" // Default to localhost if not set
+		jaegerHost = "jaeger" // The name of the Jaeger container in Docker Compose
 	}
 
 	cfg := &config.Configuration{
@@ -24,7 +24,6 @@ func InitJaeger(serviceName string) (opentracing.Tracer, io.Closer) {
 		},
 		Reporter: &config.ReporterConfig{
 			LocalAgentHostPort: jaegerHost + ":6831", // Jaeger agent address
-			LogSpans:           true,
 		},
 	}
 
@@ -32,6 +31,5 @@ func InitJaeger(serviceName string) (opentracing.Tracer, io.Closer) {
 	if err != nil {
 		log.Fatalf("Failed to initialize Jaeger: %v", err)
 	}
-	opentracing.SetGlobalTracer(tracer)
 	return tracer, closer
 }
